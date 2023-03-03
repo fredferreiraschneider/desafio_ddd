@@ -7,6 +7,7 @@ import SendFirstNotificationWhenClientCreatedHandler from "../../domain/event/@s
 import CustomerCreatedEvent from "../../domain/event/@shared/Customer/customer-created.event";
 import SendSecondNotificationWhenClientCreatedHandler from "../../domain/event/@shared/Customer/handler/send-second-notification-when-client-created.handler";
 import SendNotificationWhenClientUpdateHandler from "../../domain/event/@shared/Customer/handler/send-notification-when-client-update.handler";
+import CustomerUpdateEvent from "../../domain/event/@shared/Customer/customer-update.event";
 
 export default class CustomerRepository implements CustomerRepositoryInterface {
   async create(entity: Customer): Promise<void> {
@@ -61,8 +62,8 @@ export default class CustomerRepository implements CustomerRepositoryInterface {
 
     const eventDispatcher = new EventDispatcher();
     const eventHandler = new SendNotificationWhenClientUpdateHandler();
-    eventDispatcher.register("CustomerCreatedEvent", eventHandler);
-    const cusCreatedEvent = new CustomerCreatedEvent({
+    eventDispatcher.register("CustomerUpdateEvent", eventHandler);
+    const cusCreatedEvent = new CustomerUpdateEvent({
           id: entity.id,
           nome: entity.name,
           endereco: entity.Address.street,

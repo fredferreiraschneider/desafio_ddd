@@ -1,22 +1,22 @@
 import EventDispatcher from "./event-dispatcher";
 import SendNotificationWhenClientUpdateHandler from "./Customer/handler/send-notification-when-client-update.handler";
-import CustomerCreatedEvent from "./Customer/customer-created.event";
+import CustomerUpdateEvent from "./Customer/customer-update.event";
 
 describe("Domain events tests", () => {
   it("should register an event handler", () => {
     const eventDispatcher = new EventDispatcher();
     const eventHandler = new SendNotificationWhenClientUpdateHandler();
 
-    eventDispatcher.register("CustomerCreatedEvent", eventHandler);
+    eventDispatcher.register("CustomerUpdateEvent", eventHandler);
 
     expect(
-      eventDispatcher.getEventHandlers["CustomerCreatedEvent"]
+      eventDispatcher.getEventHandlers["CustomerUpdateEvent"]
     ).toBeDefined();
-    expect(eventDispatcher.getEventHandlers["CustomerCreatedEvent"].length).toBe(
+    expect(eventDispatcher.getEventHandlers["CustomerUpdateEvent"].length).toBe(
       1
     );
     expect(
-      eventDispatcher.getEventHandlers["CustomerCreatedEvent"][0]
+      eventDispatcher.getEventHandlers["CustomerUpdateEvent"][0]
     ).toMatchObject(eventHandler);
   });
 
@@ -24,18 +24,18 @@ describe("Domain events tests", () => {
     const eventDispatcher = new EventDispatcher();
     const eventHandler = new SendNotificationWhenClientUpdateHandler();
 
-    eventDispatcher.register("CustomerCreatedEvent", eventHandler);
+    eventDispatcher.register("CustomerUpdateEvent", eventHandler);
 
     expect(
-      eventDispatcher.getEventHandlers["CustomerCreatedEvent"][0]
+      eventDispatcher.getEventHandlers["CustomerUpdateEvent"][0]
     ).toMatchObject(eventHandler);
 
-    eventDispatcher.unregister("CustomerCreatedEvent", eventHandler);
+    eventDispatcher.unregister("CustomerUpdateEvent", eventHandler);
 
     expect(
-      eventDispatcher.getEventHandlers["CustomerCreatedEvent"]
+      eventDispatcher.getEventHandlers["CustomerUpdateEvent"]
     ).toBeDefined();
-    expect(eventDispatcher.getEventHandlers["CustomerCreatedEvent"].length).toBe(
+    expect(eventDispatcher.getEventHandlers["CustomerUpdateEvent"].length).toBe(
       0
     );
   });
@@ -44,16 +44,16 @@ describe("Domain events tests", () => {
     const eventDispatcher = new EventDispatcher();
     const eventHandler = new SendNotificationWhenClientUpdateHandler();
 
-    eventDispatcher.register("CustomerCreatedEvent", eventHandler);
+    eventDispatcher.register("CustomerUpdateEvent", eventHandler);
 
     expect(
-      eventDispatcher.getEventHandlers["CustomerCreatedEvent"][0]
+      eventDispatcher.getEventHandlers["CustomerUpdateEvent"][0]
     ).toMatchObject(eventHandler);
 
     eventDispatcher.unregisterAll();
 
     expect(
-      eventDispatcher.getEventHandlers["CustomerCreatedEvent"]
+      eventDispatcher.getEventHandlers["CustomerUpdateEvent"]
     ).toBeUndefined();
   });
 
@@ -62,19 +62,19 @@ describe("Domain events tests", () => {
     const eventHandler = new SendNotificationWhenClientUpdateHandler();
     const spyEventHandler = jest.spyOn(eventHandler, "handle");
 
-    eventDispatcher.register("CustomerCreatedEvent", eventHandler);
+    eventDispatcher.register("CustomerUpdateEvent", eventHandler);
 
     expect(
-      eventDispatcher.getEventHandlers["CustomerCreatedEvent"][0]
+      eventDispatcher.getEventHandlers["CustomerUpdateEvent"][0]
     ).toMatchObject(eventHandler);
 
-    const customerCreatedEvent = new CustomerCreatedEvent({
+    const customerUpdateEvent = new CustomerUpdateEvent({
       id: "123",
       nome: "Nome ",
       endereco: "Endereço update",
     });
 
-    eventDispatcher.notify(customerCreatedEvent);
+    eventDispatcher.notify(customerUpdateEvent);
 
     expect(spyEventHandler).toHaveBeenCalled();
   });
