@@ -2,6 +2,11 @@ import Customer from "../../domain/entity/customer";
 import Address from "../../domain/entity/address";
 import CustomerRepositoryInterface from "../../domain/repository/customer-repository.interface";
 import CustomerModel from "../db/sequelize/model/customer.model";
+import EventDispatcher from "../../domain/event/@shared/event-dispatcher";
+import SendFirstNotificationWhenClientCreatedHandler from "../../domain/event/@shared/Customer/handler/send-first-notification-when-client-created.handler";
+import CustomerCreatedEvent from "../../domain/event/@shared/Customer/customer-created.event";
+import SendSecondNotificationWhenClientCreatedHandler from "../../domain/event/@shared/Customer/handler/send-second-notification-when-client-created.handler";
+import SendNotificationWhenClientUpdateHandler from "../../domain/event/@shared/Customer/handler/send-notification-when-client-update.handler";
 
 export default class CustomerRepository implements CustomerRepositoryInterface {
   async create(entity: Customer): Promise<void> {
@@ -15,6 +20,25 @@ export default class CustomerRepository implements CustomerRepositoryInterface {
       active: entity.isActive(),
       rewardPoints: entity.rewardPoints,
     });
+
+
+    const eventDispatcher = new EventDispatcher();
+    const eventHandler = new SendFirstNotificationWhenClientCreatedHandler();
+    eventDispatcher.register("CustomerCreatedEvent", eventHandler);
+    const cusCreatedEvent = new CustomerCreatedEvent({
+          name: entity.name,
+        });
+    eventDispatcher.notify(cusCreatedEvent);
+
+
+    const eventSecondHandler = new SendSecondNotificationWhenClientCreatedHandler();
+    eventDispatcher.register("CustomerCreatedEvent", eventSecondHandler);
+    const customerCreatedEvent = new CustomerCreatedEvent({
+          name: entity.name,
+        });
+    eventDispatcher.notify(customerCreatedEvent);
+
+
   }
 
   async update(entity: Customer): Promise<void> {
@@ -34,6 +58,16 @@ export default class CustomerRepository implements CustomerRepositoryInterface {
         },
       }
     );
+
+    const eventDispatcher = new EventDispatcher();
+    const eventHandler = new SendNotificationWhenClientUpdateHandler();
+    eventDispatcher.register("CustomerCreatedEvent", eventHandler);
+    const cusCreatedEvent = new CustomerCreatedEvent({
+          id: entity.id,
+          nome: entity.name,
+          endereco: entity.Address.street,
+        });
+    eventDispatcher.notify(cusCreatedEvent);
   }
 
   async find(id: string): Promise<Customer> {
